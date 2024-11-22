@@ -1,7 +1,7 @@
 package com.meistermeier.springai.neo4j.springaineo4jexample;
 
-import org.springframework.ai.chat.ChatClient;
-import org.springframework.ai.chat.ChatResponse;
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.SystemPromptTemplate;
@@ -33,9 +33,9 @@ public class CypherPromptService {
 			DOCUMENTS:
 			{documents}""";
 
-	public CypherPromptService(VectorStore vectorStore, ChatClient chatClient) {
+	public CypherPromptService(VectorStore vectorStore, ChatClient.Builder chatClientBuilder) {
 		this.vectorStore = vectorStore;
-		this.chatClient = chatClient;
+		this.chatClient = chatClientBuilder.build();
 	}
 
 
@@ -49,7 +49,7 @@ public class CypherPromptService {
 		var userMessage = new UserMessage(message);
 
 		var prompt = new Prompt(List.of(systemMessage, userMessage));
-		ChatResponse response = chatClient.call(prompt);
+		ChatResponse response = chatClient.prompt(prompt).call().chatResponse();
 
 		return response.getResult().getOutput().getContent();
 	}
